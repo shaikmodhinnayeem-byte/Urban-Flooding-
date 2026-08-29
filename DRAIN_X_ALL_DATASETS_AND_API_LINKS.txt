@@ -1,0 +1,247 @@
+====================================================================================================
+           DRAIN-X: CHENNAI URBAN FLOOD NOWCASTING & EARLY WARNING SYSTEM
+               COMPLETE MASTER DIRECTORY OF ALL DATASETS, LINKS & API ENDPOINTS
+====================================================================================================
+
+Generated: 2026-08-28
+Project: DRAIN-X (Smart City Urban Flood Nowcasting System)
+Target City: Greater Chennai Corporation (14 Metropolitan Zones & 200 Wards)
+
+----------------------------------------------------------------------------------------------------
+SECTION 1: OFFICIAL SIH REQUIREMENT DATASETS (35 DATA REGISTERS)
+----------------------------------------------------------------------------------------------------
+
+1. Chennai Doppler Weather Radar (DWR)
+   - Agency: India Meteorological Department (IMD)
+   - Format: NetCDF / GeoTIFF dBZ Reflectivity (S-Band)
+   - Official Link: https://mausam.imd.gov.in/responsive/radar.php?id=Chennai
+
+2. IMD Weather API Reference Specification
+   - Agency: India Meteorological Department (IMD)
+   - Format: RESTful JSON Documentation & Specs
+   - Official Link: https://api.imd.gov.in/public/api_reference.html
+
+3. IMD Current Weather Data API
+   - Agency: India Meteorological Department (IMD)
+   - Format: JSON Telemetry (Temperature, Pressure, Humidity)
+   - Official Link: https://api.imd.gov.in/api/v1/current_wx
+
+4. IMD District Rainfall Data API
+   - Agency: India Meteorological Department (IMD)
+   - Format: JSON Time-Series / Cumulative Precipitation
+   - Official Link: https://api.imd.gov.in/api/v1/districtrainfall
+
+5. IMD AWS / ARG Automated Station Telemetry API
+   - Agency: India Meteorological Department (IMD)
+   - Format: Automated Weather Stations & Rain Gauges JSON Stream
+   - Official Link: https://api.imd.gov.in/api/v1/aws_data
+
+6. IMD Rainfall Forecast (0-3h / State-District) API
+   - Agency: India Meteorological Department (IMD)
+   - Format: JSON 0-3h Temporal Rainfall Forecast Hyetographs
+   - Official Link: https://api.imd.gov.in/api/v1/state_district_rainfall_forecast
+
+7. IMD District Meteorological Warning API
+   - Agency: India Meteorological Department (IMD)
+   - Format: Common Alerting Protocol (CAP) / Cyclone Warnings
+   - Official Link: https://api.imd.gov.in/api/v1/districtwarning
+
+8. Chennai GIS / TNGIS Spatial Catalog
+   - Agency: Tamil Nadu Geospatial Information System (TNGIS / CUMTA)
+   - Format: ESRI Shapefile / WFS / WMS Layers
+   - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+9. Chennai Comprehensive Stormwater Drainage Network
+   - Agency: TNGIS / Greater Chennai Corporation (GCC)
+   - Format: GeoJSON Directed Pipe Graph (Primary Canals & Secondary Pipes)
+   - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+10. Chennai Water Bodies & Coastal Marshlands
+    - Agency: TNGIS / Water Resources Department (WRD)
+    - Format: GeoJSON Hydrographic Polygons (Velachery Lake, Pallikaranai Marsh)
+    - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+11. Chennai Land Use / Land Cover (LULC)
+    - Agency: TNGIS / Chennai Metropolitan Development Authority (CMDA)
+    - Format: Raster / Vector Grid (Impervious Concrete vs Green Cover)
+    - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+12. Chennai OpenStreetMap Road Network Geometry
+    - Agency: OpenStreetMap Community (OSM)
+    - Format: OSM XML / PBF / GeoJSON Vectors
+    - Official Link: https://www.openstreetmap.org/
+
+13. India Road GIS Dataset (Geofabrik)
+    - Agency: Geofabrik Asia / OpenStreetMap
+    - Format: Shapefile / GeoJSON Arterials & Expressways
+    - Official Link: https://download.geofabrik.de/asia/india.html
+
+14. Chennai High-Resolution Digital Elevation Model (CartoDEM 2.5m)
+    - Agency: Survey of India (SOI)
+    - Format: GeoTIFF 2.5m Resolution Topographic Elevation
+    - Official Link: https://surveyofindia.gov.in/pages/availability-of-ori-and-dem
+
+15. ISRO Bhuvan 2D/3D Geospatial Portal
+    - Agency: National Remote Sensing Centre (ISRO NRSC)
+    - Format: WMS / WMTS Satellite Tiles
+    - Official Link: https://bhuvan-app1.nrsc.gov.in/bhuvan2d/bhuvan/bhuvan2d.php
+
+16. Historical Flood / Inundation Data (Bhuvan FEWS)
+    - Agency: ISRO NRSC Flood Early Warning System
+    - Format: Satellite Polygon Flood Hazard Inundation Extents
+    - Official Link: https://bhuvan-app1.nrsc.gov.in/fews/index.php
+
+17. Chennai Flood Monitoring & Deluge Records (2015-2023)
+    - Agency: ISRO NRSC
+    - Format: Historical Inundation Depth Masks
+    - Official Link: https://bhuvan-app1.nrsc.gov.in/fews/index.php
+
+18. IMD Chennai Weather Map & Observation Summaries
+    - Agency: IMD Decision Support System (DSS)
+    - Format: GIS Layer / Radar Track Maps
+    - Official Link: https://dss.imd.gov.in/dwr_img/GIS/chennai_obsums.html
+
+19. IMD Geospatial Rainfall Portal
+    - Agency: IMD Geospatial Division
+    - Format: NetCDF / Gridded Isohyetal Precipitation Maps
+    - Official Link: https://imdgeospatial.imd.gov.in/Rainfall/
+
+20. GCC Ward Manhole Locations & Codes
+    - Agency: Municipal Corporation of Greater Chennai
+    - Format: Point GeoJSON / Invert MSL Elevations
+    - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+21. Drain Conduit Dimensions (Diameters, Widths, Heights)
+    - Agency: Greater Chennai Corporation (Stormwater Dept)
+    - Format: Conduit Attribute Table
+    - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+22. Drain Elevation & Longitudinal Bed Slopes
+    - Agency: Greater Chennai Corporation
+    - Format: Invert Elevation Longitudinal Profiles
+    - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+23. Drain Hydraulic Capacity (Manning's Equation Solver)
+    - Agency: DRAIN-X Hydraulic Physics Engine
+    - Format: Computed Q_capacity in m3/s
+    - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+24. Ultrasonic Manhole Water-Level Stream
+    - Agency: DRAIN-X Edge IoT Fleet (SN-VEL..SN-AMB)
+    - Format: MQTT / Time-Series JSON Telemetry
+    - Official Link: http://127.0.0.1:8000/api/sensors
+
+25. Manhole Surcharge & Overflow Detection State
+    - Agency: DRAIN-X IoT Alarm Stream
+    - Format: Real-Time Surcharge Flags
+    - Official Link: http://127.0.0.1:8000/api/drainage/nodes
+
+26. Conduit Ultrasonic Debris & Blockage Sensor
+    - Agency: DRAIN-X Ultrasonic Blockage Telemetry
+    - Format: Silt / Debris Percentage Telemetry
+    - Official Link: http://127.0.0.1:8000/api/sensors
+
+27. Real-Time Geotagged Sensor Coordinate Register
+    - Agency: DRAIN-X Telemetry Registry
+    - Format: Geospatial Node Table
+    - Official Link: http://127.0.0.1:8000/api/sensors
+
+28. Historical Flood Locations (Michaung & 2015 Sinks)
+    - Agency: ISRO Bhuvan FEWS
+    - Format: Geocoded Flood Sinks
+    - Official Link: https://bhuvan-app1.nrsc.gov.in/fews/index.php
+
+29. Flood Hazard / Inundation Zonation Maps
+    - Agency: ISRO Bhuvan FEWS
+    - Format: Return-Period Hazard Polygons
+    - Official Link: https://bhuvan-app1.nrsc.gov.in/fews/index.php
+
+30. Chennai Municipal Administrative & Ward Boundaries
+    - Agency: TNGIS / GCC
+    - Format: 15 Zones & 200 Ward Polygons
+    - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+31. Critical Infrastructure Register (Substations, Telecom)
+    - Agency: TNGIS CUMTA
+    - Format: Asset GeoJSON
+    - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+32. Hospitals & Fire Emergency Facilities
+    - Agency: OpenStreetMap & Health Dept
+    - Format: Geocoded Points of Interest
+    - Official Link: https://www.openstreetmap.org/
+
+33. Emergency Roads & Evacuation Arteries
+    - Agency: OpenStreetMap / Traffic Police
+    - Format: Designated Highway Corridors
+    - Official Link: https://www.openstreetmap.org/
+
+34. Water Bodies / Rivers / Tanks (Adyar, Cooum, Chembarambakkam)
+    - Agency: TNGIS / Water Resources Dept
+    - Format: Hydrographic Shapefiles
+    - Official Link: https://tngis.tn.gov.in/apps/cumta/
+
+35. Terrain Elevation & D8 Flow Accumulation Grid
+    - Agency: Survey of India
+    - Format: D8 Flow Direction & Sink Raster
+    - Official Link: https://surveyofindia.gov.in/pages/availability-of-ori-and-dem
+
+
+----------------------------------------------------------------------------------------------------
+SECTION 2: LIVE OPERATIONAL METEOROLOGICAL & MAP TILE API LINKS
+----------------------------------------------------------------------------------------------------
+
+1. Live Chennai Atmospheric Telemetry API (Real-Time Current Weather)
+   - URL: https://api.open-meteo.com/v1/forecast?latitude=13.0827&longitude=80.2707&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,precipitation,rain&forecast_days=1
+
+2. High-Resolution Satellite HD Basemap Tile API (Esri World Imagery)
+   - Satellite Tiles: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}
+   - Reference Labels: https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}
+
+3. Dark Tactical Basemap Tile API (CartoDB Dark Matter)
+   - Tiles: https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png
+
+4. OpenStreetMap Standard Street Basemap Tile API
+   - Tiles: https://tile.openstreetmap.org/{z}/{x}/{y}.png
+
+5. IMD Regional Meteorological Centre Chennai Portal
+   - URL: https://mausam.imd.gov.in/chennai/
+
+
+----------------------------------------------------------------------------------------------------
+SECTION 3: LOCAL DRAIN-X BACKEND REST API ENDPOINTS (TEST & INTEGRATION)
+----------------------------------------------------------------------------------------------------
+
+Root Swagger / OpenAPI Docs: http://127.0.0.1:8000/docs
+Frontend Web Application:   http://localhost:5173/
+
+1. Live Weather Endpoint:
+   GET http://127.0.0.1:8000/api/rainfall/live-weather?area_id=1
+
+2. Chennai Wards & Zones Directory:
+   GET http://127.0.0.1:8000/api/areas
+
+3. GIS Multi-Layer Spatial Data (Roads, Drains, Manholes, Sensors, Lakes):
+   GET http://127.0.0.1:8000/api/gis/layers/1
+
+4. 0-3 Hour AI Flood Predictions:
+   GET http://127.0.0.1:8000/api/prediction/nowcast?area_id=1&lead_time_min=60
+
+5. IoT Sensors Telemetry Fleet:
+   GET http://127.0.0.1:8000/api/sensors?area_id=1
+
+6. Directed Drainage Network Conduits:
+   GET http://127.0.0.1:8000/api/drainage/segments
+
+7. Active Disaster Emergency Alerts:
+   GET http://127.0.0.1:8000/api/alerts
+
+8. Flood-Safe Bypass Route Engine:
+   POST http://127.0.0.1:8000/api/routes/find-safe-route
+
+9. Storm Simulation Scenario Driver:
+   POST http://127.0.0.1:8000/api/simulation/trigger
+
+====================================================================================================
+                                      END OF MASTER DIRECTORY
+====================================================================================================
