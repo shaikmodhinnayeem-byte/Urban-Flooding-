@@ -1,5 +1,8 @@
-const rawBase = (import.meta.env.VITE_API_URL || '').trim();
-export const API_BASE = rawBase ? `${rawBase.replace(/\/$/, '')}/api` : '/api';
+const rawBase = (import.meta.env.VITE_API_URL || '').trim().replace(/\/$/, '');
+export const API_BASE = rawBase 
+  ? (rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`)
+  : '/api';
+
 
 export const apiClient = {
   getToken: () => localStorage.getItem('drainx_token'),
