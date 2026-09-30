@@ -31,8 +31,8 @@ export const GisFloodMap: React.FC<GisFloodMapProps> = ({
   const baseTileLayerRef = useRef<L.TileLayer | null>(null);
   const labelTileLayerRef = useRef<L.TileLayer | null>(null);
 
-  // Basemap switch: Default to High-Resolution Satellite (satellite | dark | streets | water)
-  const [baseMapType, setBaseMapType] = useState<'satellite' | 'dark' | 'streets' | 'water'>('satellite');
+  // Basemap switch: Default to High-Resolution Satellite (satellite | dark | streets | bhuvan | water)
+  const [baseMapType, setBaseMapType] = useState<'satellite' | 'dark' | 'streets' | 'bhuvan' | 'water'>('satellite');
 
   // Layer toggles
   const [layersVisibility, setLayersVisibility] = useState({
@@ -50,7 +50,7 @@ export const GisFloodMap: React.FC<GisFloodMapProps> = ({
   };
 
   // Base Tile URLs
-  const getTileConfig = (type: 'satellite' | 'dark' | 'streets' | 'water') => {
+  const getTileConfig = (type: 'satellite' | 'dark' | 'streets' | 'bhuvan' | 'water') => {
     switch (type) {
       case 'satellite':
         return {
@@ -73,13 +73,21 @@ export const GisFloodMap: React.FC<GisFloodMapProps> = ({
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           maxZoom: 19,
         };
-      case 'water':
+      case 'bhuvan':
         return {
-          base: 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png',
+          base: 'https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wmts/1.0.0/india3/default/EPSG:900913/{z}/{x}/{y}.png',
           labels: 'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-          attribution: 'DRAIN-X Hydrological Water Inundation Model & Subsurface Digital Twin',
+          attribution: '&copy; <a href="https://bhuvan.nrsc.gov.in">ISRO Bhuvan NRSC</a> &mdash; Government of India Satellite Layer',
           maxZoom: 19,
         };
+      case 'water':
+        return {
+          base: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          labels: 'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+          attribution: 'Tiles &copy; Esri &mdash; DRAIN-X Satellite Hydrological Surface Twin',
+          maxZoom: 19,
+        };
+
     }
   };
 
@@ -562,7 +570,20 @@ export const GisFloodMap: React.FC<GisFloodMapProps> = ({
               <span>🗺️ Street View</span>
             </button>
 
-            {/* 4th Option: Water Map */}
+            {/* ISRO Bhuvan Tiles */}
+            <button
+              onClick={() => setBaseMapType('bhuvan')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition ${
+                baseMapType === 'bhuvan'
+                  ? 'bg-amber-950/80 text-amber-300 border border-amber-500/60 shadow-lg'
+                  : 'text-amber-400/80 hover:text-amber-200 hover:bg-slate-800 border border-amber-500/20'
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5 text-amber-400" />
+              <span>🇮🇳 ISRO Bhuvan</span>
+            </button>
+
+            {/* Water Map */}
             <button
               onClick={() => setBaseMapType('water')}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-black text-xs transition-all text-cyan-400 hover:text-cyan-200 hover:bg-slate-800/80 border border-cyan-500/40 bg-slate-950/80"

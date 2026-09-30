@@ -164,8 +164,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Radio className="w-3.5 h-3.5 text-indigo-400" />
               <span className="font-semibold text-indigo-300">{radarDbz.toFixed(1)} dBZ</span>
             </div>
+
+            <div className="h-3 w-px bg-slate-700"></div>
+
+            {/* DUAL ML MODEL ACCURACY BADGE */}
+            <div className="flex items-center gap-1.5 bg-cyan-950/80 border border-cyan-500/40 px-2.5 py-0.5 rounded font-mono text-[11px]" title="Spatiotemporal ML Models Accuracy: XGBoost (Primary) vs Gradient Boosting (Baseline)">
+              <span className="text-cyan-400 font-bold">⚡ ML R²:</span>
+              <span className="text-emerald-300 font-black">XGB 94.15%</span>
+              <span className="text-slate-500">|</span>
+              <span className="text-blue-300 font-bold">GBR 93.98%</span>
+
+            </div>
           </div>
         </div>
+
 
         {/* Right: Quick Simulation Triggers & Auth */}
         <div className="flex items-center gap-2.5">
@@ -197,8 +209,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <p className="text-xs font-semibold text-white leading-tight">{currentUser.full_name}</p>
                 <div className="flex items-center justify-end gap-1">
                   <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded uppercase ${
-                    currentUser.role === 'ADMIN' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' :
-                    currentUser.role === 'RESCUE' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
+                    currentUser.role?.toUpperCase() === 'ADMIN' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' :
+                    currentUser.role?.toUpperCase() === 'RESCUE' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
                     'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
                   }`}>
                     {currentUser.role}

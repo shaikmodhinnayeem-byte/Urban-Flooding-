@@ -1,33 +1,74 @@
 import datetime
 from sqlalchemy import (
-    Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text, Enum as SQLEnum, create_engine
+    Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text, Enum as SQLEnum, create_engine, func
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from app.config import settings
 
 Base = declarative_base()
-engine = create_engine(settings.DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-def get_db():
-    db = SessionLocal()
+# Primary PostgreSQL Engine Setup with active connection verification
+db_url = settings.DATABASE_URL
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+engine = None
+if "postgresql" in db_url:
     try:
-        yield db
-    finally:
-        db.close()
+        from sqlalchemy import text
+        connect_args = {"connect_timeout": 15}
+        if "neon.tech" in db_url and "sslmode" not in db_url:
+            connect_args["sslmode"] = "require"
+        candidate = create_engine(
+            db_url,
+            pool_pre_ping=True,
+            pool_recycle=300,
+            connect_args=connect_args
+        )
+        with candidate.connect() as test_conn:
+            test_conn.execute(text("SELECT 1"))
+        engine = candidate
+        print("[INFO] Successfully connected to Neon / PostgreSQL database.")
+    except Exception as e:
+        print(f"[WARNING] Primary PostgreSQL connection failed ({e}). Falling back to SQLite.")
+
+if engine is None:
+    engine = create_engine(settings.SQLITE_DATABASE_URL, connect_args={"check_same_thread": False})
+
+# Secondary SQLite engine for non-user domain models
+sqlite_engine = create_engine(settings.SQLITE_DATABASE_URL, connect_args={"check_same_thread": False})
 
 # ----------------- USERS & AUTH -----------------
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(120), unique=True, index=True, nullable=False)
-    hashed_password = Column(String(255), nullable=False)
-    full_name = Column(String(100), nullable=False)
-    role = Column(String(20), default="USER") # USER, ADMIN, RESCUE
-    phone = Column(String(20), nullable=True)
-    department = Column(String(100), default="Citizen / Public")
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String(100), nullable=False)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    password_hash = Column(Text, nullable=False)
+    role = Column(String(20), nullable=False, default="user") # 'user', 'admin'
+    created_at = Column(DateTime, server_default=func.now(), default=datetime.datetime.utcnow)
+
+    @property
+    def full_name(self) -> str:
+        return self.name
+
+    @full_name.setter
+    def full_name(self, value: str):
+        self.name = value
+
+    @property
+    def hashed_password(self) -> str:
+        return self.password_hash
+
+    @hashed_password.setter
+    def hashed_password(self, value: str):
+        self.password_hash = value
+
+    @property
+    def is_active(self) -> bool:
+        return True
+
 
 # ----------------- AREAS & WARDS -----------------
 class Area(Base):
@@ -280,5 +321,66 @@ class AuditLog(Base):
     details = Column(Text, nullable=True)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
 
+def create_session_factory():
+    return sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        binds={
+            User: engine,
+            Area: sqlite_engine,
+            Road: sqlite_engine,
+            DrainNode: sqlite_engine,
+            DrainSegment: sqlite_engine,
+            Sensor: sqlite_engine,
+            SensorReading: sqlite_engine,
+            RainfallRecord: sqlite_engine,
+            TerrainDEM: sqlite_engine,
+            FloodPrediction: sqlite_engine,
+            Alert: sqlite_engine,
+            RescueTeam: sqlite_engine,
+            RescueTask: sqlite_engine,
+            DatasetRegistry: sqlite_engine,
+            MLModelRegistry: sqlite_engine,
+            AuditLog: sqlite_engine,
+        }
+    )
+
+SessionLocal = create_session_factory()
+SecondarySessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=sqlite_engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+def get_secondary_db():
+    db = SecondarySessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 def init_db():
-    Base.metadata.create_all(bind=engine)
+    from sqlalchemy import inspect
+    # Only create the 'users' table on the primary PostgreSQL database as per requirement
+    try:
+        User.__table__.create(bind=engine, checkfirst=True)
+        print("[INFO] PostgreSQL 'users' table created / verified successfully.")
+    except Exception as e:
+        print(f"[INFO] PostgreSQL table creation status: {e}")
+        try:
+            Base.metadata.create_all(bind=engine, tables=[User.__table__])
+        except Exception as inner_e:
+            print(f"[WARNING] Primary PostgreSQL init skipped ({inner_e}). Falling back to secondary database.")
+            User.__table__.create(bind=sqlite_engine, checkfirst=True)
+
+    # Initialize non-user application domain tables on secondary engine to preserve app functionality
+    try:
+        non_user_tables = [table for name, table in Base.metadata.tables.items() if name != "users"]
+        Base.metadata.create_all(bind=sqlite_engine, tables=non_user_tables)
+    except Exception as e:
+        print(f"[INFO] Non-user domain tables initialization status: {e}")
+

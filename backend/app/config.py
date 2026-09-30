@@ -1,5 +1,8 @@
 import os
+from dotenv import load_dotenv
 from pydantic import BaseModel
+
+load_dotenv()
 
 class Settings(BaseModel):
     PROJECT_NAME: str = "DRAIN-X — Chennai Urban Flood Nowcasting System"
@@ -7,12 +10,13 @@ class Settings(BaseModel):
     API_PREFIX: str = "/api"
     
     # Security
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "drainx_chennai_smart_city_secure_key_2026_x99a")
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET", os.getenv("JWT_SECRET_KEY", "drainx_chennai_smart_city_secure_key_2026_x99a"))
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 # 24 hours
     
-    # Database
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./drainx_master.db")
+    # PostgreSQL Database URL
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:Nayeem%40786@localhost:5432/urbanflooding")
+    SQLITE_DATABASE_URL: str = "sqlite:///./drainx_master.db"
     
     # Simulation & AI Engine
     SIMULATION_INTERVAL_SEC: int = 5
@@ -20,3 +24,4 @@ class Settings(BaseModel):
     DEFAULT_AREA: str = "Velachery"
 
 settings = Settings()
+

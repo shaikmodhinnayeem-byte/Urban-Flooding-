@@ -23,7 +23,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({
   const [severity, setSeverity] = useState('WARNING');
   const [sending, setSending] = useState(false);
 
-  const isAdmin = currentUser?.role === 'ADMIN';
+  const isAdmin = currentUser?.role?.toUpperCase() === 'ADMIN';
 
   const filteredAlerts = filterSeverity === 'ALL'
     ? alerts

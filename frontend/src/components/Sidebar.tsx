@@ -34,9 +34,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentUser,
   activeAlertCount,
 }) => {
-  const isAdmin = currentUser?.role === 'ADMIN';
+  const userRole = currentUser?.role?.toUpperCase() || 'USER';
+  const isAdmin = userRole === 'ADMIN';
+  const isRescue = userRole === 'RESCUE';
 
-  const navItems = [
+  // Base navigation items for Citizen / Resident User dashboard
+  const userNavItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: null },
+    { id: 'flood_map', label: 'GIS Flood Map', icon: Map, badge: 'Live' },
+    { id: 'area_analysis', label: 'Area Analysis', icon: Compass, badge: null },
+    { id: 'prediction', label: 'AI 0-3h Nowcast', icon: BrainCircuit, badge: 'ML/DL' },
+    { id: 'safe_route', label: 'Safe Route Engine', icon: Navigation, badge: null },
+    { id: 'alerts', label: 'Disaster Alerts', icon: AlertOctagon, badge: activeAlertCount > 0 ? `${activeAlertCount}` : null },
+  ];
+
+  // Full navigation items for Admin Command and Specialized Technical Roles
+  const adminNavItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: null },
     { id: 'flood_map', label: 'GIS Flood Map', icon: Map, badge: 'Live' },
     { id: 'area_analysis', label: 'Area Analysis', icon: Compass, badge: null },
@@ -50,6 +63,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'rescue', label: 'Rescue Command', icon: LifeBuoy, badge: null },
     { id: 'reports', label: 'Reports & Analytics', icon: FileText, badge: null },
   ];
+
+  // Rescue squad navigation
+  const rescueNavItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: null },
+    { id: 'flood_map', label: 'GIS Flood Map', icon: Map, badge: 'Live' },
+    { id: 'prediction', label: 'AI 0-3h Nowcast', icon: BrainCircuit, badge: 'ML/DL' },
+    { id: 'safe_route', label: 'Safe Route Engine', icon: Navigation, badge: null },
+    { id: 'alerts', label: 'Disaster Alerts', icon: AlertOctagon, badge: activeAlertCount > 0 ? `${activeAlertCount}` : null },
+    { id: 'rescue', label: 'Rescue Command', icon: LifeBuoy, badge: null },
+  ];
+
+  const navItems = isAdmin ? adminNavItems : isRescue ? rescueNavItems : userNavItems;
 
   return (
     <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col h-[calc(100vh-4rem)] select-none shrink-0">

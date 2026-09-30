@@ -205,10 +205,27 @@ export const AdminPortalView: React.FC = () => {
           <div className="flex items-center gap-2">
             <Database className="w-5 h-5 text-cyan-400" />
             <h3 className="text-base font-bold text-white font-['Outfit']">
-              SIH Official Datasets Pipeline & Sync Registers
+              SIH Official Datasets Pipeline & Operational Registry
             </h3>
           </div>
-          <span className="text-xs text-slate-400">GeoJSON / NetCDF / WGS84</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                try {
+                  await apiClient.post('/admin/datasets/sync', {});
+                  setMsg('Live datasets refreshed successfully!');
+                  fetchData();
+                } catch (e) {
+                  setMsg('Sync trigger failed.');
+                }
+              }}
+              className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Trigger Sync</span>
+            </button>
+            <span className="text-xs text-slate-400 font-mono">35 Master Sources</span>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -218,34 +235,57 @@ export const AdminPortalView: React.FC = () => {
                 <th className="p-3">Dataset Name</th>
                 <th className="p-3">Category</th>
                 <th className="p-3">Record Count</th>
-                <th className="p-3">File Format</th>
+                <th className="p-3">Format / Protocol</th>
                 <th className="p-3">Sync Status</th>
+                <th className="p-3">Last Synced</th>
                 <th className="p-3">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
-              {datasets.map((ds) => (
-                <tr key={ds.id} className="hover:bg-slate-800/50 transition">
-                  <td className="p-3 font-semibold text-white">{ds.name}</td>
-                  <td className="p-3 text-cyan-300 font-mono text-[11px]">{ds.category}</td>
-                  <td className="p-3 text-slate-300 font-medium">{ds.record_count.toLocaleString()} rows</td>
-                  <td className="p-3 text-slate-400">{ds.file_format}</td>
-                  <td className="p-3">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      {ds.status}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <button
-                      onClick={() => handleValidateDs(ds.id)}
-                      disabled={validatingDsId === ds.id}
-                      className="px-2.5 py-1 bg-slate-800 hover:bg-cyan-600 text-slate-200 hover:text-white rounded text-[10px] font-bold transition disabled:opacity-50"
-                    >
-                      {validatingDsId === ds.id ? 'Validating...' : 'Validate Schema'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {datasets.map((ds) => {
+                let badgeStyle = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+                let statusLabel = ds.status;
+
+                if (ds.status === "LIVE") {
+                  badgeStyle = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 font-black";
+                  statusLabel = "🟢 LIVE API";
+                } else if (ds.status === "STATIC_SEED") {
+                  badgeStyle = "bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold";
+                  statusLabel = "📦 STATIC SEED";
+                } else if (ds.status === "NOT_AVAILABLE") {
+                  badgeStyle = "bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold";
+                  statusLabel = "🔴 NOT AVAILABLE - No Public API";
+                } else if (ds.status === "MANUAL_ONLY") {
+                  badgeStyle = "bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold";
+                  statusLabel = "🟡 MANUAL ACQUISITION REQUIRED";
+                }
+
+                return (
+                  <tr key={ds.id} className="hover:bg-slate-800/50 transition">
+                    <td className="p-3 font-semibold text-white">{ds.name}</td>
+                    <td className="p-3 text-cyan-300 font-mono text-[11px]">{ds.category}</td>
+                    <td className="p-3 text-slate-300 font-medium">{ds.record_count.toLocaleString()} rows</td>
+                    <td className="p-3 text-slate-400">{ds.file_format}</td>
+                    <td className="p-3">
+                      <span className={`px-2 py-1 rounded text-[10px] border ${badgeStyle}`}>
+                        {statusLabel}
+                      </span>
+                    </td>
+                    <td className="p-3 text-slate-400 font-mono text-[10px]">
+                      {ds.last_synced_at ? new Date(ds.last_synced_at).toLocaleTimeString() : 'N/A'}
+                    </td>
+                    <td className="p-3">
+                      <button
+                        onClick={() => handleValidateDs(ds.id)}
+                        disabled={validatingDsId === ds.id}
+                        className="px-2.5 py-1 bg-slate-800 hover:bg-cyan-600 text-slate-200 hover:text-white rounded text-[10px] font-bold transition disabled:opacity-50"
+                      >
+                        {validatingDsId === ds.id ? 'Validating...' : 'Validate'}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

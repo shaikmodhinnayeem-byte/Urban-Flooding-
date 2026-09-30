@@ -9,6 +9,22 @@ from app.models.schema import (
 from app.core.security import get_password_hash
 
 def seed_database(db: Session):
+    # Ensure users are seeded regardless of prior area seeds
+    try:
+        if db.query(User).count() == 0:
+            users_data = [
+                User(name="Dr. K. Radhakrishnan (Chief Disaster Controller)", email="admin@drainx.gov.in", password_hash=get_password_hash("Admin@123"), role="admin"),
+                User(name="Er. S. Anbarasu (Zonal Chief Engineer)", email="user@chennaicorp.gov.in", password_hash=get_password_hash("User@123"), role="user"),
+                User(name="Kavitha Raman (Chennai Residents Welfare Association)", email="citizen@chennai.in", password_hash=get_password_hash("Citizen@123"), role="user"),
+                User(name="Inspector Rajesh Sharma (NDRF Flood Rescue Lead)", email="rescue.lead@ndrf.gov.in", password_hash=get_password_hash("Rescue@123"), role="user"),
+            ]
+            db.add_all(users_data)
+            db.commit()
+            print("[INFO] Users table seeded successfully.")
+    except Exception as e:
+        db.rollback()
+        print(f"[INFO] Users seed check/status: {e}")
+
     # Check if already seeded with all 14 areas
     if db.query(Area).count() >= 14 and db.query(Road).count() >= 40:
         return
@@ -34,13 +50,18 @@ def seed_database(db: Session):
 
     # 1. Users
     users_data = [
-        User(email="admin@drainx.gov.in", hashed_password=get_password_hash("Admin@123"), full_name="Dr. K. Radhakrishnan (Chief Disaster Controller)", role="ADMIN", department="Tamil Nadu State Disaster Management Authority (TNSDMA)", phone="+91 44 2888 8000"),
-        User(email="user@chennaicorp.gov.in", hashed_password=get_password_hash("User@123"), full_name="Er. S. Anbarasu (Zonal Chief Engineer)", role="USER", department="Greater Chennai Corporation (Stormwater Drainage Dept)", phone="+91 44 2561 9200"),
-        User(email="citizen@chennai.in", hashed_password=get_password_hash("Citizen@123"), full_name="Kavitha Raman (Chennai Residents Welfare Association)", role="USER", department="Citizen / Community First Responder", phone="+91 98401 23456"),
-        User(email="rescue.lead@ndrf.gov.in", hashed_password=get_password_hash("Rescue@123"), full_name="Inspector Rajesh Sharma (NDRF Flood Rescue Lead)", role="RESCUE", department="National Disaster Response Force (NDRF 4th Battalion)", phone="+91 94440 99112"),
+        User(name="Dr. K. Radhakrishnan (Chief Disaster Controller)", email="admin@drainx.gov.in", password_hash=get_password_hash("Admin@123"), role="admin"),
+        User(name="Er. S. Anbarasu (Zonal Chief Engineer)", email="user@chennaicorp.gov.in", password_hash=get_password_hash("User@123"), role="user"),
+        User(name="Kavitha Raman (Chennai Residents Welfare Association)", email="citizen@chennai.in", password_hash=get_password_hash("Citizen@123"), role="user"),
+        User(name="Inspector Rajesh Sharma (NDRF Flood Rescue Lead)", email="rescue.lead@ndrf.gov.in", password_hash=get_password_hash("Rescue@123"), role="user"),
     ]
-    db.add_all(users_data)
-    db.commit()
+    try:
+        db.add_all(users_data)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"[INFO] Users seed status: {e}")
+
 
     # 2. Comprehensive 14 Areas / Wards of Chennai
     areas_data = [

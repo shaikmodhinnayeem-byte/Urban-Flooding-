@@ -495,24 +495,53 @@ export const Water3DSubsurfaceView: React.FC<Water3DSubsurfaceViewProps> = ({
             perspective: '1200px',
           }}
         >
-          {/* Base Grid Floor */}
-          <div className="absolute inset-0 border-2 border-cyan-500/30 rounded-3xl bg-slate-950/90 shadow-[0_0_100px_rgba(6,182,212,0.2)] bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:45px_45px]">
-            <div className="absolute top-4 left-6 text-[11px] font-mono text-cyan-400/90 font-extrabold uppercase tracking-widest bg-slate-900/90 px-2.5 py-1 rounded border border-slate-800">
-              ZONE {zoneNum} • WARD {wardNum} • {areaName.toUpperCase()}
+          {/* Base Grid Floor with Photorealistic Satellite Terrain & Hydro-Caustic Wave Layer */}
+          <div className="absolute inset-0 border-2 border-cyan-500/40 rounded-3xl overflow-hidden shadow-[0_0_120px_rgba(6,182,212,0.3)] bg-slate-950">
+            {/* Satellite Terrain Texture Layer */}
+            <div className="absolute inset-0 bg-[url('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/14/7431/5932')] bg-cover bg-center opacity-40 mix-blend-luminosity filter brightness-110 contrast-125" />
+            
+            {/* Fluid Wave Caustic Shimmer Layer */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-cyan-800/30 to-blue-950/80 animate-wave-shimmer mix-blend-screen opacity-70" />
+
+            {/* Tactical Hydrological Grid Lines */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:45px_45px] opacity-40" />
+
+            {/* Inundation Hotspot Dynamic Fluid Pools */}
+            {areaNodes.map((n, idx) => (
+              <div 
+                key={`pool-${idx}`}
+                className="absolute transform -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none animate-hydro-ripple filter blur-sm"
+                style={{
+                  left: `${n.x}px`,
+                  top: `${n.y}px`,
+                  width: `${Math.max(60, n.depthCm * 1.8)}px`,
+                  height: `${Math.max(60, n.depthCm * 1.8)}px`,
+                  background: n.status === 'CRITICAL' 
+                    ? 'radial-gradient(circle, rgba(239,68,68,0.55) 0%, rgba(185,28,28,0.25) 60%, transparent 100%)' 
+                    : n.status === 'SURCHARGE'
+                    ? 'radial-gradient(circle, rgba(245,158,11,0.5) 0%, rgba(180,83,9,0.2) 60%, transparent 100%)'
+                    : 'radial-gradient(circle, rgba(6,182,212,0.45) 0%, rgba(30,58,138,0.2) 60%, transparent 100%)'
+                }}
+              />
+            ))}
+
+            <div className="absolute top-4 left-6 text-[11px] font-mono text-cyan-300 font-black uppercase tracking-widest bg-slate-950/90 px-3 py-1.5 rounded-xl border border-cyan-500/50 shadow-lg backdrop-blur-md flex items-center gap-2 z-10">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              <span>ZONE {zoneNum} • WARD {wardNum} • {areaName.toUpperCase()} SATELLITE HYDRO-TWIN</span>
             </div>
-            <div className="absolute bottom-6 left-8 text-[10px] font-mono text-slate-500 uppercase font-bold">
-              ELEVATION: {avgElev}m MSL
+            <div className="absolute bottom-5 left-6 text-[10px] font-mono text-cyan-400 uppercase font-bold bg-slate-950/80 px-2.5 py-1 rounded border border-slate-800 backdrop-blur-md z-10">
+              ELEVATION: {avgElev}m MSL • SATELLITE HYDROLOGICAL SURFACE
             </div>
           </div>
 
           {/* Dynamic River / Ocean Outfall Wall Interface (Right Edge Pane) */}
-          <div className="absolute right-0 top-0 bottom-0 w-44 bg-gradient-to-l from-cyan-500/40 via-blue-600/30 to-transparent border-r-4 border-cyan-400/90 rounded-r-3xl flex items-center justify-center shadow-[0_0_40px_#06b6d4]">
-            <div className="transform -rotate-90 text-[11px] font-mono font-black text-cyan-200 uppercase tracking-widest drop-shadow-[0_0_12px_#06b6d4] text-center px-2">
+          <div className="absolute right-0 top-0 bottom-0 w-44 bg-gradient-to-l from-cyan-500/50 via-blue-600/40 to-transparent border-r-4 border-cyan-400/90 rounded-r-3xl flex items-center justify-center shadow-[0_0_50px_#06b6d4]">
+            <div className="transform -rotate-90 text-[11px] font-mono font-black text-cyan-100 uppercase tracking-widest drop-shadow-[0_0_12px_#06b6d4] text-center px-2">
               {outfallName}
             </div>
           </div>
 
-          {/* SVG Pipe Lines */}
+          {/* SVG Realistic Flowing Pipe Lines & Particle Currents */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
             {conduits.map((c, i) => {
               const source = areaNodes.find(n => n.id === c.from);
@@ -521,25 +550,38 @@ export const Water3DSubsurfaceView: React.FC<Water3DSubsurfaceViewProps> = ({
 
               return (
                 <g key={i}>
+                  {/* Outer Glow Path */}
                   <line
                     x1={source.x}
                     y1={source.y}
                     x2={target.x}
                     y2={target.y}
                     stroke="#020617"
-                    strokeWidth={c.weight + 4}
+                    strokeWidth={c.weight + 6}
                     strokeLinecap="round"
                   />
+                  {/* Base Conduit Pipe */}
                   <line
                     x1={source.x}
                     y1={source.y}
                     x2={target.x}
                     y2={target.y}
                     stroke={c.color}
-                    strokeWidth={c.weight}
+                    strokeWidth={c.weight + 1}
                     strokeLinecap="round"
-                    strokeDasharray="8 6"
-                    className="animate-pulse"
+                    opacity={0.6}
+                  />
+                  {/* Animated Fluid Particle Current Flow */}
+                  <line
+                    x1={source.x}
+                    y1={source.y}
+                    x2={target.x}
+                    y2={target.y}
+                    stroke="#ffffff"
+                    strokeWidth={Math.max(2, c.weight - 2)}
+                    strokeLinecap="round"
+                    className="animate-water-flow"
+                    opacity={0.9}
                   />
                 </g>
               );
@@ -562,22 +604,23 @@ export const Water3DSubsurfaceView: React.FC<Water3DSubsurfaceViewProps> = ({
                 <div className="relative flex flex-col items-center">
                   {/* Target Node Marker Circle */}
                   <div className="relative flex items-center justify-center">
-                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center bg-slate-950/90 shadow-2xl transition-all group-hover:scale-125 ${
+                    <div className={`w-9 h-9 rounded-full border-2 flex items-center justify-center bg-slate-950/90 shadow-2xl transition-all group-hover:scale-125 ${
                       isCritical
-                        ? 'border-red-500 text-red-400 shadow-red-500/80 bg-red-950/50'
+                        ? 'border-red-500 text-red-400 shadow-red-500/80 bg-red-950/60'
                         : isSurcharge
-                        ? 'border-amber-400 text-amber-300 shadow-amber-500/60 bg-amber-950/50'
-                        : 'border-cyan-400 text-cyan-300 shadow-cyan-500/60 bg-cyan-950/50'
+                        ? 'border-amber-400 text-amber-300 shadow-amber-500/60 bg-amber-950/60'
+                        : 'border-cyan-400 text-cyan-300 shadow-cyan-500/60 bg-cyan-950/60'
                     }`}>
-                      <div className={`w-3 h-3 rounded-full ${
+                      <div className={`w-3.5 h-3.5 rounded-full ${
                         isCritical ? 'bg-red-500 animate-ping' : isSurcharge ? 'bg-amber-400' : 'bg-cyan-400'
                       }`} />
                     </div>
 
-                    <div className={`absolute -inset-2.5 rounded-full border border-dashed animate-spin-slow pointer-events-none ${
-                      isCritical ? 'border-red-500/70' : isSurcharge ? 'border-amber-400/60' : 'border-cyan-400/50'
+                    <div className={`absolute -inset-3 rounded-full border border-dashed animate-spin-slow pointer-events-none ${
+                      isCritical ? 'border-red-500/80' : isSurcharge ? 'border-amber-400/70' : 'border-cyan-400/60'
                     }`} />
                   </div>
+
 
                   {/* Clean Non-Overlapping Badge */}
                   <div className={`mt-1.5 px-3 py-1 rounded-xl border text-[11px] font-extrabold font-['Outfit'] shadow-2xl flex items-center gap-1.5 backdrop-blur-md transition-all whitespace-nowrap ${

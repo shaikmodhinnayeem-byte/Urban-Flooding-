@@ -65,11 +65,11 @@ export const RainfallRadarView: React.FC<RainfallRadarViewProps> = ({
               <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Meteorological Surveillance</span>
               <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded font-bold flex items-center gap-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                LIVE IMD API STREAM CONNECTED
+                LIVE OPEN-METEO WEATHER ENGINE CONNECTED
               </span>
             </div>
             <h2 className="text-2xl font-black text-white font-['Outfit'] mt-1">
-              Doppler Weather Radar & Live Atmospheric Telemetry
+              Open-Meteo Weather Radar & Live Atmospheric Telemetry
             </h2>
             <p className="text-xs text-slate-400 mt-1">
               Real-time atmospheric parameters and radar reflectivity synthesis for {currentArea?.name || 'Chennai Metropolitan Basin'}.
@@ -102,7 +102,7 @@ export const RainfallRadarView: React.FC<RainfallRadarViewProps> = ({
             </div>
             <div>
               <h3 className="font-extrabold text-white text-base font-['Outfit'] flex items-center gap-2">
-                <span>Live IMD & Atmospheric Weather Station Telemetry</span>
+                <span>Live Open-Meteo Atmospheric Weather Telemetry</span>
                 <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 rounded font-mono">
                   {liveWeather?.status || 'ONLINE_SYNC'}
                 </span>

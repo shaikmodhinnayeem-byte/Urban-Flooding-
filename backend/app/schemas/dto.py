@@ -8,23 +8,27 @@ class UserLogin(BaseModel):
     password: str
 
 class UserRegister(BaseModel):
+    name: Optional[str] = None
+    full_name: Optional[str] = None
     email: str
     password: str
-    full_name: str
-    role: Optional[str] = "USER"
+    role: Optional[str] = "user"
     department: Optional[str] = "Citizen / Public"
     phone: Optional[str] = None
 
 class UserOut(BaseModel):
     id: int
+    name: Optional[str] = "Disaster Official"
+    full_name: Optional[str] = None
     email: str
-    full_name: str
     role: str
     department: Optional[str] = None
-    created_at: datetime
+    phone: Optional[str] = None
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
+
 
 class Token(BaseModel):
     access_token: str

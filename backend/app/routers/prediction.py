@@ -6,8 +6,9 @@ from app.services.ml_prediction_service import nowcast_ml_service
 
 router = APIRouter(prefix="/prediction", tags=["AI / Deep Learning Nowcast"])
 
+@router.get("/nowcast")
 @router.get("/nowcast/{area_id}")
-def get_area_nowcast(area_id: int, db: Session = Depends(get_db)) -> Dict[str, Any]:
+def get_area_nowcast(area_id: int = 1, lead_time_min: int = 60, db: Session = Depends(get_db)) -> Dict[str, Any]:
     area = db.query(Area).filter(Area.id == area_id).first()
     if not area:
         raise HTTPException(status_code=404, detail="Area not found")

@@ -1,4 +1,5 @@
-const API_BASE = '/api';
+const rawBase = (import.meta.env.VITE_API_URL || '').trim();
+export const API_BASE = rawBase ? `${rawBase.replace(/\/$/, '')}/api` : '/api';
 
 export const apiClient = {
   getToken: () => localStorage.getItem('drainx_token'),
@@ -34,8 +35,15 @@ export const apiClient = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({ detail: 'Network Error' }));
-      throw new Error(err.detail || `API POST ${endpoint} failed`);
+      let errMsg = `Request failed with status ${res.status}`;
+      try {
+        const err = await res.json();
+        errMsg = err.detail || err.message || errMsg;
+      } catch {
+        const text = await res.text().catch(() => '');
+        if (text) errMsg = text;
+      }
+      throw new Error(errMsg);
     }
     return res.json();
   },
