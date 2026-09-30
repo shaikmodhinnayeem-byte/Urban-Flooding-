@@ -87,10 +87,12 @@ def startup_event():
     pg_db = SessionLocal()            # Dual-engine session bound to PostgreSQL
     secondary_db = SecondarySessionLocal()  # Dual-engine session bound to SQLite
     try:
+        # Populate initial users in primary Neon PostgreSQL database
+        seed_database(pg_db)
         # Populate initial GIS boundaries, sensors, roads, and rescue teams
         seed_database(secondary_db)
     except Exception as e:
-        print(f"[INFO] Domain seed status: {e}")
+        print(f"[INFO] Database seed status: {e}")
     finally:
         # Guarantee database connections are gracefully returned to connection pool
         pg_db.close()
