@@ -1,8 +1,10 @@
 import os
 import sys
-from dotenv import load_dotenv
-
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 db_url = os.getenv("DATABASE_URL", "")
 if len(sys.argv) > 1:

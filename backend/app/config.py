@@ -1,8 +1,10 @@
 import os
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 from pydantic import BaseModel
-
-load_dotenv()
 
 class Settings(BaseModel):
     PROJECT_NAME: str = "DRAIN-X — Chennai Urban Flood Nowcasting System"
